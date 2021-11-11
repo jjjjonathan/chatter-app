@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import API, { graphqlOperation } from '@aws-amplify/api';
 import { listMessages } from './graphql/queries';
+import { Message } from './API';
 
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 
 const App = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     // Declare any type as workaround for https://github.com/aws-amplify/amplify-js/issues/4257
@@ -32,7 +33,14 @@ const App = () => {
     <div className="container">
       <div className="messages">
         <div className="messages-scroller">
-          {/* messages will be loaded here */}
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={message.author === 'Dave' ? 'message me' : 'message'}
+            >
+              {message.body}
+            </div>
+          ))}
         </div>
       </div>
       <div className="chat-bar">
