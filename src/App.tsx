@@ -1,9 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import API, { graphqlOperation } from '@aws-amplify/api';
+import { listMessages } from './graphql/queries';
+
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 
 const App = () => {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    // Declare any type as workaround for https://github.com/aws-amplify/amplify-js/issues/4257
+    (API.graphql(graphqlOperation(listMessages)) as any).then(
+      (response: any) => {
+        const items = response.data?.listMessages?.items;
+
+        if (items) {
+          setMessages(items);
+        }
+      },
+    );
+  }, []);
+
   // Placeholder function for handling changes to our chat bar
   const handleChange = () => {};
 
