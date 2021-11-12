@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import API, { graphqlOperation } from '@aws-amplify/api';
 import { listMessages } from './graphql/queries';
 import { Message } from './API';
+import { SxProps } from '@mui/system';
 
 import {
   Container,
@@ -11,7 +12,6 @@ import {
   InputAdornment,
 } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
-import { SxProps } from '@mui/system';
 
 const App = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -37,13 +37,12 @@ const App = () => {
 
   const chatStyles = (me: boolean) => {
     const base: SxProps = {
-      mt: 4,
-      px: 8,
-      py: 12,
+      mt: '4px',
+      px: '8px',
+      py: '12px',
       maxWidth: 240,
       background: '#f1f0f0',
-      borderRadius: '16',
-      fontSize: '14',
+      borderRadius: '16px',
     };
 
     if (me)
