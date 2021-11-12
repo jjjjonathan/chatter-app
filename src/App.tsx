@@ -3,9 +3,15 @@ import API, { graphqlOperation } from '@aws-amplify/api';
 import { listMessages } from './graphql/queries';
 import { Message } from './API';
 
-import './App.css';
-import { Container, Stack, TextField, InputAdornment } from '@mui/material';
+import {
+  Container,
+  Stack,
+  Box,
+  TextField,
+  InputAdornment,
+} from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
+import { SxProps } from '@mui/system';
 
 const App = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -29,6 +35,27 @@ const App = () => {
   // Placeholder function for handling the form submission
   const handleSubmit = () => {};
 
+  const chatStyles = (me: boolean) => {
+    const base: SxProps = {
+      mt: 4,
+      px: 8,
+      py: 12,
+      maxWidth: 240,
+      background: '#f1f0f0',
+      borderRadius: '16',
+      fontSize: '14',
+    };
+
+    if (me)
+      return {
+        ...base,
+        alignSelf: 'flex-end',
+        background: '#f19e38',
+        color: 'white',
+      };
+    return base;
+  };
+
   return (
     <Container maxWidth="sm">
       <Stack
@@ -38,32 +65,27 @@ const App = () => {
         spacing={2}
       >
         {messages.map((message) => (
-          <div
-            key={message.id}
-            className={message.author === 'Dave' ? 'message me' : 'message'}
-          >
+          <Box key={message.id} sx={chatStyles(message.author === 'Dave')}>
             {message.body}
-          </div>
+          </Box>
         ))}
       </Stack>
-      <div className="chat-bar">
-        <form onSubmit={handleSubmit}>
-          <TextField
-            variant="outlined"
-            name="messageBody"
-            placeholder="Type your message here"
-            onChange={handleChange}
-            value={''}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <AccountCircle />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </form>
-      </div>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          variant="outlined"
+          name="messageBody"
+          placeholder="Type your message here"
+          onChange={handleChange}
+          value={''}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <AccountCircle />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </form>
     </Container>
   );
 };
