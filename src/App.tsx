@@ -3,6 +3,8 @@ import API, { graphqlOperation } from '@aws-amplify/api';
 import { messagesByChannelID } from './graphql/queries';
 import { Message } from './API';
 import { SxProps } from '@mui/system';
+import '@aws-amplify/pubsub';
+import { onCreateMessage } from './graphql/subscriptions';
 
 import {
   Container,
@@ -16,8 +18,10 @@ import { AccountCircle } from '@mui/icons-material';
 const App = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
+  // API.graphql is set to any type as workaround for this issue:
+  // https://github.com/aws-amplify/amplify-js/issues/4257
+
   useEffect(() => {
-    // Declare any type as workaround for https://github.com/aws-amplify/amplify-js/issues/4257
     (
       API.graphql(
         graphqlOperation(messagesByChannelID, {
@@ -33,6 +37,20 @@ const App = () => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    const subscription = (
+      API.graphql(graphqlOperation(onCreateMessage)) as any
+    ).subscribe({
+      next: (event: any) => {
+        setMessages([...messages, event.value.data.onCreateMessage]);
+      },
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [messages]);
 
   // Placeholder function for handling changes to our chat bar
   const handleChange = () => {};
