@@ -3,9 +3,9 @@ import API, { graphqlOperation } from '@aws-amplify/api';
 import { listMessages } from './graphql/queries';
 import { Message } from './API';
 
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import './App.css';
+import { Container, Stack, TextField, InputAdornment } from '@mui/material';
+import { AccountCircle } from '@mui/icons-material';
 
 const App = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -30,19 +30,22 @@ const App = () => {
   const handleSubmit = () => {};
 
   return (
-    <div className="container">
-      <div className="messages">
-        <div className="messages-scroller">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={message.author === 'Dave' ? 'message me' : 'message'}
-            >
-              {message.body}
-            </div>
-          ))}
-        </div>
-      </div>
+    <Container maxWidth="sm">
+      <Stack
+        direction="column"
+        justifyContent="flex-end"
+        alignItems="flex-start"
+        spacing={2}
+      >
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={message.author === 'Dave' ? 'message me' : 'message'}
+          >
+            {message.body}
+          </div>
+        ))}
+      </Stack>
       <div className="chat-bar">
         <form onSubmit={handleSubmit}>
           <TextField
@@ -61,7 +64,7 @@ const App = () => {
           />
         </form>
       </div>
-    </div>
+    </Container>
   );
 };
 
