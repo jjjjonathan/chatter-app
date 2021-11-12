@@ -5,6 +5,7 @@ import { Message } from './API';
 import { SxProps } from '@mui/system';
 import '@aws-amplify/pubsub';
 import { onCreateMessage } from './graphql/subscriptions';
+import { createMessage } from './graphql/mutations';
 
 import {
   Container,
@@ -17,6 +18,7 @@ import { AccountCircle } from '@mui/icons-material';
 
 const App = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [messageBody, setMessageBody] = useState('');
 
   // API.graphql is set to any type as workaround for this issue:
   // https://github.com/aws-amplify/amplify-js/issues/4257
@@ -52,11 +54,29 @@ const App = () => {
     };
   }, [messages]);
 
-  // Placeholder function for handling changes to our chat bar
-  const handleChange = () => {};
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    setMessageBody(event.target.value);
+  };
 
-  // Placeholder function for handling the form submission
-  const handleSubmit = () => {};
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (
+    event,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const input = {
+      channelID: '1',
+      author: 'Dave',
+      body: messageBody.trim(),
+    };
+
+    try {
+      setMessageBody('');
+      await API.graphql(graphqlOperation(createMessage, { input }));
+    } catch (error) {
+      console.warn(error);
+    }
+  };
 
   const chatStyles = (me: boolean) => {
     const base: SxProps = {
@@ -98,7 +118,7 @@ const App = () => {
           name="messageBody"
           placeholder="Type your message here"
           onChange={handleChange}
-          value={''}
+          value={messageBody}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
