@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import API, { graphqlOperation } from '@aws-amplify/api';
-import { listMessages } from './graphql/queries';
+import { messagesByChannelID } from './graphql/queries';
 import { Message } from './API';
 import { SxProps } from '@mui/system';
 
@@ -18,15 +18,20 @@ const App = () => {
 
   useEffect(() => {
     // Declare any type as workaround for https://github.com/aws-amplify/amplify-js/issues/4257
-    (API.graphql(graphqlOperation(listMessages)) as any).then(
-      (response: any) => {
-        const items = response.data?.listMessages?.items;
+    (
+      API.graphql(
+        graphqlOperation(messagesByChannelID, {
+          channelID: '1',
+          sortDirection: 'ASC',
+        }),
+      ) as any
+    ).then((response: any) => {
+      const items = response.data?.messagesByChannelID?.items;
 
-        if (items) {
-          setMessages(items);
-        }
-      },
-    );
+      if (items) {
+        setMessages(items);
+      }
+    });
   }, []);
 
   // Placeholder function for handling changes to our chat bar
