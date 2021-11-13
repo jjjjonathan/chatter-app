@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import API, { graphqlOperation } from '@aws-amplify/api';
-import { messagesByChannelID } from './graphql/queries';
+import { Auth } from '@aws-amplify/auth';
 import { Message } from './API';
-import { SxProps } from '@mui/system';
 import '@aws-amplify/pubsub';
+import { messagesByChannelID } from './graphql/queries';
 import { onCreateMessage } from './graphql/subscriptions';
 import { createMessage } from './graphql/mutations';
+import { withAuthenticator } from '@aws-amplify/ui-react';
 
+import { SxProps } from '@mui/system';
 import {
   Container,
   Stack,
@@ -19,6 +21,14 @@ import { AccountCircle } from '@mui/icons-material';
 const App = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageBody, setMessageBody] = useState('');
+  // TODO fix this any type
+  const [userInfo, setUserInfo] = useState<any>(null);
+
+  useEffect(() => {
+    Auth.currentUserInfo().then((userInfo) => {
+      setUserInfo(userInfo);
+    });
+  }, []);
 
   // API.graphql is set to any type as workaround for this issue:
   // https://github.com/aws-amplify/amplify-js/issues/4257
@@ -66,7 +76,7 @@ const App = () => {
 
     const input = {
       channelID: '1',
-      author: 'Dave',
+      author: userInfo.id,
       body: messageBody.trim(),
     };
 
@@ -132,4 +142,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default withAuthenticator(App);
