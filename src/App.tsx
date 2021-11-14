@@ -21,7 +21,6 @@ import { AccountCircle } from '@mui/icons-material';
 const App = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageBody, setMessageBody] = useState('');
-  // TODO fix this any type
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
@@ -117,13 +116,17 @@ const App = () => {
         spacing={2}
       >
         {messages.map((message) => (
-          <Box key={message.id} sx={chatStyles(message.author === 'Dave')}>
+          <Box
+            key={message.id}
+            sx={chatStyles(message.author === userInfo?.id)}
+          >
             {message.body}
           </Box>
         ))}
       </Stack>
       <form onSubmit={handleSubmit}>
         <TextField
+          disabled={userInfo === null}
           variant="outlined"
           name="messageBody"
           placeholder="Type your message here"
