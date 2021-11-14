@@ -6,12 +6,13 @@ import '@aws-amplify/pubsub';
 import { messagesByChannelID } from './graphql/queries';
 import { onCreateMessage } from './graphql/subscriptions';
 import { createMessage } from './graphql/mutations';
-import { withAuthenticator } from '@aws-amplify/ui-react';
+import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 
 import { SxProps } from '@mui/system';
 import {
   Container,
   Stack,
+  Typography,
   Box,
   TextField,
   InputAdornment,
@@ -90,11 +91,11 @@ const App = () => {
   const chatStyles = (me: boolean) => {
     const base: SxProps = {
       mt: '4px',
-      px: '8px',
-      py: '12px',
+      px: '12px',
+      py: '8px',
       maxWidth: 240,
       background: '#f1f0f0',
-      borderRadius: '16px',
+      borderRadius: '24px',
     };
 
     if (me)
@@ -109,6 +110,20 @@ const App = () => {
 
   return (
     <Container maxWidth="sm">
+      {userInfo && (
+        <Stack
+          direction="row"
+          justifyContent="flex-end"
+          alignItems="center"
+          spacing={3}
+          sx={{ mb: 4 }}
+        >
+          <Typography>
+            You are logged in as: <strong>{userInfo.username}</strong>
+          </Typography>
+          <AmplifySignOut />
+        </Stack>
+      )}
       <Stack
         direction="column"
         justifyContent="flex-end"
@@ -120,16 +135,18 @@ const App = () => {
             key={message.id}
             sx={chatStyles(message.author === userInfo?.id)}
           >
-            {message.body}
+            <Typography>{message.body}</Typography>
           </Box>
         ))}
       </Stack>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate autoComplete="off">
         <TextField
+          sx={{ pt: 4 }}
           disabled={userInfo === null}
+          fullWidth
           variant="outlined"
           name="messageBody"
-          placeholder="Type your message here"
+          placeholder="Type your message..."
           onChange={handleChange}
           value={messageBody}
           InputProps={{
